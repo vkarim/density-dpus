@@ -93,7 +93,3 @@ The logical data model is under doc/data_model. The SQL DDL file is at resources
 - Documentation on production technologies.
 
 **See above.**
-
-## Submission
-Create a new repo using your Github account with a unique name and send us the final product (please do not fork or submit a PR to this repo).
-
