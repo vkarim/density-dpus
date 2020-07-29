@@ -10,8 +10,6 @@ The goal here is to create an API that can handle both historical and real-time 
 
 Density DPUs (depth processing units) are mounted above doorways. The DPU sends a request to the API when a person passes underneath (+1 when towards the DPU, -1 when walking away from the DPU).
 
-A CSV file of raw events from a handful of DPUs, and a floorplan indicating DPUs, doorways, and spaces is linked to below:
-
 ![space diagram](https://raw.githubusercontent.com/DensityCo/api-hw/trunk/space-diagram.png)
 
 
