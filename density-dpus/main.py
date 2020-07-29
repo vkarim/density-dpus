@@ -13,9 +13,12 @@ def record_movement(dpu_id: str, direction: int, timestamp: str):
     # query the k-v store for dpu_id -> (space_positive, space_negative, location_id).
     # 'space_positive' is the id of the space whose count should be incremented upon receiving a +1.
     # 'space_negative' is the id of the space whose count should be decremented upon receiving a +1.
-    # note that either of space_positive or space_negative could be null.
 
-    # write to a kafka queue a tuple of the form:
+    # (note that either of space_positive or space_negative could be null (but at least one should be non-null, or
+    # it probably indicates some misconfiguration in the DB). The k-v store is expected to be initialized and kept
+    # up to date with the metadata DB once it's been brought up so that it has this mapping available at all times.)
+
+    # write to a queue a tuple of the form:
     # (space_positive, space_pos_count, space_negative, space_neg_count, timestamp)
 
     # if direction is +1, the tuple will be:
@@ -23,9 +26,12 @@ def record_movement(dpu_id: str, direction: int, timestamp: str):
     # else if direction is -1:
     #    (space_positive, -1, space_negative, +1, location_id)
 
-    # also update the counts for space_positive and space_negative spaces in the k-v store.
+    # also update the counts for the 'space_positive' and 'space_negative' spaces in the k-v store.
+
     # note that the k-v store will give approximate counts (potentially dipping into negative? if messages
-    # arrive significantly out of order), whereas the historical counts should be more accurate.
+    # arrive significantly out of order), whereas the historical counts should be more accurate since we try to actually
+    # re-order the messages to more accurately reflect the real order in which the events occurred, before storing
+    # to the backend timeseries DB.
 
     return ""
 
@@ -51,6 +57,7 @@ def get_historical_count(space_id: str, timestamp: str):
 
 # Endpoints from here on are for managing the metadata which doesn't change as often,
 # such as: locations, spaces, doorways, DPUs, etc. They are all prefixed with /metadata/.
+# These endpoints could be used when setting up a DPU somewhere out in the field at a new location perhaps.
 
 @app.route('/metadata/api/v1.0/locations/new', methods=['POST'])
 def create_location():
