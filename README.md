@@ -10,7 +10,7 @@ The goal here is to create an API that can handle both historical and real-time 
 
 Density DPUs (depth processing units) are mounted above doorways. The DPU sends a request to the API when a person passes underneath (+1 when towards the DPU, -1 when walking away from the DPU).
 
-You are provided with a CSV file of raw events from a handful of DPUs, and a floorplan indicating DPUs, doorways, and spaces.
+A CSV file of raw events from a handful of DPUs, and a floorplan indicating DPUs, doorways, and spaces is linked to below:
 
 ![space diagram](https://raw.githubusercontent.com/DensityCo/api-hw/trunk/space-diagram.png)
 
@@ -21,21 +21,21 @@ The task was to accomplish the following:
 
 - Scaffold a database structure that includes spaces, doorways, and count data.
 
-**I've included a logical data model diagram in doc/data_model. The SQL DDL file can be found under resources/sql/ddl.sql**
+**I've included a logical data model diagram under doc/data_model. The SQL DDL file can be found at resources/sql/ddl.sql**
 
 - Document how you would store and return real-time count for spaces.
 - Document how you would store and return historical count for spaces.
 
 **The REST endpoint for active counts would simply write a tuple of the form (space_positive, space_pos_count, space_negative, space_neg_count, timestamp)
-to the Kafka queue. This queue would/could be partitioned by location_id to better serve some locations that had higher foot traffic
+to the (Kafka?) queue. This queue would/could be partitioned by location_id to better serve some locations that have higher foot traffic
 than others. The readers at the other end of the queue would re-sequence the messages arriving as much as possible 
 (see: https://www.enterpriseintegrationpatterns.com/patterns/messaging/Resequencer.html) for each space_id (based on timestsamp) 
 to mitigate out-of-orderness.** 
 
-**Note that since DPU messages can in theory be delayed for as long as possible, in the interests of timely reporting it might not 
+**Note that since DPU messages can in theory be delayed for as long as possible, so in the interests of timely reporting it might not 
 be possible to get a 100% accurate count at every point in time.**
 
-**Once the messages are re-sequenced, they are written to another Kafka queue, and the readers from this queue read messages
+**Once the messages are re-sequenced, they are written to another (Kafka?) queue, and the readers from this queue read messages
 up to a certain defined limit, and write them out to the SpacePersonCount time series database. This has the benefit of 
 being able to write to the database in batches which should be more performant than writing individual rows. 
 (I'm assuming one is available, such as TimeScaleDB). There may be other alternatives to this, such as Cassandra which has a 
@@ -76,7 +76,7 @@ For delivery of this assignment:
 
 - Database schema / SQL file.
 
-The logical data model is in doc/data_model. SQL DDL files are in resources/sql/ddl.sql
+The logical data model is under doc/data_model. The SQL DDL file is at resources/sql/ddl.sql.
 
 - Prototype a Python application that yields the current count of a given space at a given point in time. For example, "what was the count at 3:34pm yesterday?"
 
